@@ -1,0 +1,54 @@
+#ООП #pygame ```
+import pygame
+from pygame import *
+
+display = (540, 360)  # Размер окна
+back_color = "#009900"  # Цвет фона
+pl_size = (30, 20)  # Размер игрока
+pl_speed = 1  # Скорость игрока
+
+
+class Igrok(sprite.Sprite):
+    def __init__(self, x, y):
+        super().__init__()
+        self.image = Surface(pl_size)
+        self.image.fill(Color("#666666"))
+        self.rect = Rect(x, y, *pl_size)
+
+    def moves(self, keys):
+        move_x = (keys[K_RIGHT] - keys[K_LEFT]) * pl_speed
+        move_y = (keys[K_DOWN] - keys[K_UP]) * pl_speed
+
+        self.rect.x += (move_x)
+        self.rect.y += (move_y)
+
+        # Проверка границ
+        self.rect.clamp_ip(Rect(0, 0, *display))
+
+    def draw(self, screen):
+        screen.blit(self.image, self.rect)
+
+
+def main():
+    pygame.init()
+    screen = pygame.display.set_mode(display)
+    back = Surface(display)
+    back.fill(Color(back_color))
+    hero = Igrok(260, 160)
+
+    running = True
+    while running:
+        for e in pygame.event.get():
+            if e.type == QUIT:
+                running = False
+
+        keys = pygame.key.get_pressed()  # Получаем состояние клавиш
+        hero.moves(keys)  # Перемещение игрока
+        screen.blit(back, (0, 0))  # Сброс фона
+        hero.draw(screen)  # Отрисовка игрока
+        pygame.display.update()  # Обновление экрана
+
+
+if __name__ == "__main__":
+    main()
+```
