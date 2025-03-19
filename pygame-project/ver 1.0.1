@@ -1,0 +1,87 @@
+import pygame
+from pygame import *
+
+vertical_block = (50, 200)
+horizontal_block = (200, 50)
+display_width = 720
+display_height = 540
+display = (display_width, display_height)  # Размер окна
+back_color = "#000000"  # Цвет фона
+pl_size = (20, 20)  # Размер игрока
+pl_speed = 2  # Скорость игрока
+current_level = 1  # Текущий уровень для обработки событий игры
+
+def start_levels(current_level, surface):
+    # Очистка уровня
+    surface.fill(Color(back_color))
+
+    # Отрисовка препятствий в зависимости от текущего уровня
+    if current_level == 1:
+        pygame.draw.rect(surface, '#555555', (0, display_height - 310, *horizontal_block))  # Горизонтальное препятствие
+        pygame.draw.rect(surface, '#555555', (100, display_height - 410, *vertical_block))  # Вертикальное препятствие 1
+        pygame.draw.rect(surface, '#555555', (display_width - 340, 0, *vertical_block))  # Вертикальное препятствие 2
+        pygame.draw.rect(surface, '#555555', (530, 150, *vertical_block))  # Дополнительное горизонтальное
+        pygame.draw.rect(surface, '#555555', (450, display_height - 150, *vertical_block))  # Дополнительное вертикальное
+        pygame.draw.rect(surface, '#555555', (300, display_height - 100, *horizontal_block))  # Горизонтальное препятствие
+        pygame.draw.rect(surface, '#555555', (200, display_height-200, *vertical_block))  # Вертикальное препятствие 1
+        pygame.draw.rect(surface, '#555555', (display_width - 340, 0, *vertical_block))  # Вертикальное препятствие 2
+        pygame.draw.rect(surface, '#555555', (100, 120, *horizontal_block))  # Дополнительное горизонтальное
+        pygame.draw.rect(surface, '#555555', (380, 200, *horizontal_block))  # Дополнительное вертикальное
+
+    elif current_level == 2:
+        pygame.draw.rect(surface, '#ffffff', (150, 70, 50, 50))  
+        pygame.draw.rect(surface, '#00ff00', (300, 150, 40, 80))  
+        pygame.draw.rect(surface, '#ffff00', (400, 300, 100, 20)) 
+        pygame.draw.rect(surface, '#ff00ff', (200, 400, 50, 100))  
+
+    elif current_level == 3:
+        pygame.draw.rect(surface, '#ffffff', (100, 100, 200, 40)) 
+        pygame.draw.rect(surface, '#0000ff', (400, 50, 30, 150))  
+        pygame.draw.rect(surface, '#ff0000', (50, 200, 300, 30))  
+        pygame.draw.rect(surface, '#00ffff', (600, 100, 20, 200))  
+
+class Igrok(sprite.Sprite):
+    def __init__(self, x, y):
+        super().__init__()
+        self.image = Surface(pl_size)
+        self.image.fill(Color("#ffffff"))
+        self.rect = Rect(x, y, *pl_size)
+
+    def moves(self, keys):
+        move_x = (keys[K_RIGHT] - keys[K_LEFT]) * pl_speed
+        move_y = (keys[K_DOWN] - keys[K_UP]) * pl_speed
+
+        self.rect.x += (move_x)
+        self.rect.y += (move_y)
+
+        # Проверка границ
+        self.rect.clamp_ip(Rect(0, 0, *display))
+
+    def draw(self, screen):
+        screen.blit(self.image, self.rect)
+
+
+def main():
+    pygame.init()
+    screen = pygame.display.set_mode(display)
+    back = Surface(display)
+    back.fill(Color(back_color))
+    start_levels(current_level, back)
+    hero = Igrok(500, 15)
+
+    running = True
+    while running:
+        for e in pygame.event.get():
+            if e.type == QUIT:
+                running = False
+
+        keys = pygame.key.get_pressed()  # Получаем состояние клавиш
+        hero.moves(keys)  # Перемещение игрока
+        screen.blit(back, (0, 0))  # Сброс фона
+        hero.draw(screen)  # Отрисовка игрока
+        pygame.display.update()  # Обновление экрана
+        print(hero.rect.x, hero.rect.y)
+
+
+if __name__ == "__main__":
+    main()
